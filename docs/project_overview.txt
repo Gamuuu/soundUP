@@ -1,0 +1,70 @@
+PROJECT OVERVIEW: sounduup
+
+1. INTRODUCTION
+   This is a web application built with Next.js 16 (App Router). The project appears to be a business or portfolio site featuring various sections such as "About Us", "Products", "Experiences", and "Promotions". It utilizes modern React features (React 19) and is styled with Tailwind CSS.
+
+2. TECHNOLOGIES & TOOLS
+   - Core Framework: Next.js 16.0.7
+   - UI Library: React 19.2.1
+   - Styling: Tailwind CSS 3.4.17 (with PostCSS & Autoprefixer)
+   - Animations: Framer Motion 12.23.24
+   - Icons: Lucide React 0.555.0
+   - Code Quality: ESLint 9.39.1
+
+3. SETUP INSTRUCTIONS
+   To get this project running locally:
+
+   A. Prerequisites
+      - Node.js (Latest LTS recommended)
+      - npm (Node Package Manager)
+
+   B. Installation
+      Open your terminal in the project root and run:
+      $ npm install
+
+   C. Running Development Server
+      Start the local dev server:
+      $ npm run dev
+      
+      Access the app at: http://localhost:3000
+
+   D. Building for Production
+      To create an optimized production build:
+      $ npm run build
+
+      To preview the production build:
+      $ npm start
+
+4. PROJECT STRUCTURE
+   The project follows the Next.js App Router structure within the 'src' directory.
+
+   / (Root)
+   ├── next.config.mjs       # Next.js configuration
+   ├── tailwind.config.js    # Tailwind CSS configuration
+   ├── package.json          # Dependencies and scripts
+   ├── public/               # Static assets (images, icons)
+   └── src/
+       ├── app/              # App Router: Pages and layouts
+       │   ├── layout.js     # Root layout (likely contains Navbar/Footer)
+       │   ├── page.js       # Homepage
+       │   ├── globals.css   # Global styles (Tailwind imports)
+       │   ├── about-us/     # Route: /about-us
+       │   ├── contact/      # Route: /contact
+       │   ├── experiences/  # Route: /experiences
+       │   ├── products/     # Route: /products
+       │   └── promotion/    # Route: /promotion
+       ├── assets/           # Project specific assets
+       └── components/       # Reusable React components
+           ├── ui/           # Generic UI elements (ScrollNavigation, SectionHeading)
+           ├── Navbar.jsx    # Navigation bar
+           ├── Hero.jsx      # Hero section component
+           ├── Gallery.jsx   # Image gallery component
+           ├── Popular.jsx   # 'Popular' section component
+           ├── Promotion.jsx # Promotion section component
+           └── Categories.jsx
+
+5. CURRENT SCRIPT COMMANDS
+   - dev: "next dev"
+   - build: "next build"
+   - start: "next start"
+   - lint: "next lint"
