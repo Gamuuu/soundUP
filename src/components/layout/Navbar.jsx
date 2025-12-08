@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search, User } from 'lucide-react';
+import { supabaseAuth } from '../../lib/supabaseAuth';
 
 const navLinks = [
     { name: 'Home', href: '/' },
@@ -19,18 +20,47 @@ const Navbar = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Check for logged-in user in localStorage
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (error) {
-                console.error("Error parsing user data:", error);
+        const checkUser = async () => {
+            // Check Supabase Session (Google Login)
+            const { data: { session } } = await supabaseAuth.auth.getSession();
+
+            if (session?.user) {
+                setUser({
+                    ...session.user,
+                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User'
+                });
+                return;
+            }
+
+            // Check for logged-in user in localStorage (Email Login)
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    setUser(JSON.parse(storedUser));
+                } catch (error) {
+                    console.error("Error parsing user data:", error);
+                    setUser(null);
+                }
+            } else {
                 setUser(null);
             }
-        } else {
-            setUser(null);
-        }
+        };
+
+        checkUser();
+
+        // Listen for Supabase auth changes
+        const { data: { subscription } } = supabaseAuth.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                setUser({
+                    ...session.user,
+                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User'
+                });
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, [pathname]); // Re-check on route change (e.g. after login/logout)
 
     return (
@@ -73,7 +103,7 @@ const Navbar = () => {
                             className="flex items-center space-x-2 text-sm font-medium text-accent hover:text-white transition-colors border border-accent/20 rounded-full px-4 py-1.5 hover:bg-accent/10"
                         >
                             <User size={16} />
-                            <span>Hi, {user.name?.split(' ')[0] || 'User'}</span>
+                            <span>Hi, {user.name || 'User'}</span>
                         </Link>
                     ) : (
                         <Link 

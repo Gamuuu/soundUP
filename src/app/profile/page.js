@@ -3,22 +3,41 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { LogOut, User as UserIcon, ShoppingBag } from 'lucide-react';
+import { LogOut, User as UserIcon, ShoppingBag, ChevronLeft } from 'lucide-react';
+import { supabaseAuth, signOut } from '../../lib/supabaseAuth';
+import NeonCube from '../../components/ui/NeonCube';
 
 export default function Profile() {
     const [user, setUser] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (!storedUser) {
-            router.push('/login');
-            return;
-        }
-        setUser(JSON.parse(storedUser));
+        const checkUser = async () => {
+             // Check Supabase Session
+            const { data: { session } } = await supabaseAuth.auth.getSession();
+            if (session?.user) {
+                setUser({
+                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User',
+                    email: session.user.email,
+                    role: session.user.user_metadata?.role || 'Member',
+                    ...session.user
+                });
+                return;
+            }
+
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            } else {
+                router.push('/login');
+            }
+        };
+        
+        checkUser();
     }, [router]);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await signOut();
         localStorage.removeItem('user');
         alert('You have been logged out.');
         router.push('/login');
@@ -34,15 +53,23 @@ export default function Profile() {
             </div>
 
             <div className="max-w-4xl mx-auto relative z-10">
+                <button 
+                    onClick={() => router.back()} 
+                    className="flex items-center gap-2 text-gray-400 hover:text-accent transition-colors mb-6 group"
+                >
+                    <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    <span>Back</span>
+                </button>
+
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-zinc-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl"
                 >
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-                        {/* Avatar Placeholder */}
-                        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-zinc-800 to-black border-2 border-accent flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(255,85,0,0.3)]">
-                            <UserIcon size={48} className="text-accent" />
+                        {/* 3D Cube Avatar */}
+                        <div className="shrink-0">
+                             <NeonCube size={120} color="#FF5500" />
                         </div>
 
                         {/* User Info */}
