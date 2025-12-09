@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import CategoryCard from '../../components/products/CategoryCard';
+import { motion } from 'framer-motion';
 
 export default function Products() {
     const [products, setProducts] = useState([]);
@@ -13,12 +14,7 @@ export default function Products() {
             try {
                 const response = await fetch('/api/products');
                 const data = await response.json();
-                if (Array.isArray(data)) {
-                    setProducts(data);
-                } else {
-                    console.error('Fetched data is not an array:', data);
-                    setProducts([]);
-                }
+                setProducts(data);
             } catch (error) {
                 console.error('Error fetching products:', error);
             } finally {
@@ -29,12 +25,12 @@ export default function Products() {
         fetchProducts();
     }, []);
 
-    // Group products by category
+    // Group products by item_type
     const groupedProducts = {
-        Speaker: products.filter(p => p.category === 'Speaker'),
-        Subwoofer: products.filter(p => p.category === 'Subwoofer'),
-        Amplifier: products.filter(p => p.category === 'Amplifier'),
-        'Head Unit': products.filter(p => p.category === 'Head Unit')
+        Speaker: products.filter(p => p.item_type === 'Speaker'),
+        Subwoofer: products.filter(p => p.item_type === 'Subwoofer'),
+        Amplifier: products.filter(p => p.item_type === 'Amplifier'),
+        'Head Unit': products.filter(p => p.item_type === 'Head Unit')
     };
 
     const categories = [
@@ -77,9 +73,9 @@ export default function Products() {
                             style={{
                                 WebkitBackgroundClip: 'text',
                                 backgroundClip: 'text',
-                                backgroundImage: "url('/assets/images/about-us.jpg')", // Using available asset
+                                backgroundImage: "url('/assets/images/ProductBanner.jpg')",
                                 backgroundSize: 'cover',
-                                backgroundPosition: 'center',
+                                backgroundPosition: 'center 78%',
                                 WebkitTextStroke: '1px rgba(255, 255, 255, 0.1)'
                             }}
                         >

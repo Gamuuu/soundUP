@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, User } from 'lucide-react';
-import { supabaseAuth } from '../../lib/supabaseAuth';
+import { Search, User, ShoppingBag } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 const navLinks = [
     { name: 'Home', href: '/' },
@@ -17,51 +18,8 @@ const navLinks = [
 
 const Navbar = () => {
     const pathname = usePathname();
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-        const checkUser = async () => {
-            // Check Supabase Session (Google Login)
-            const { data: { session } } = await supabaseAuth.auth.getSession();
-
-            if (session?.user) {
-                setUser({
-                    ...session.user,
-                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User'
-                });
-                return;
-            }
-
-            // Check for logged-in user in localStorage (Email Login)
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                try {
-                    setUser(JSON.parse(storedUser));
-                } catch (error) {
-                    console.error("Error parsing user data:", error);
-                    setUser(null);
-                }
-            } else {
-                setUser(null);
-            }
-        };
-
-        checkUser();
-
-        // Listen for Supabase auth changes
-        const { data: { subscription } } = supabaseAuth.auth.onAuthStateChange((_event, session) => {
-            if (session?.user) {
-                setUser({
-                    ...session.user,
-                    name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User'
-                });
-            }
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, [pathname]); // Re-check on route change (e.g. after login/logout)
+    const { user } = useAuth();
+    const { toggleCart, cartCount } = useCart();
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
@@ -83,8 +41,9 @@ const Navbar = () => {
                                 }`}
                         >
                             {link.name}
-                            <span className={`absolute left-0 -bottom-1 w-full h-0.5 scale-x-0 transition-transform duration-300 group-hover:scale-x-100 origin-left ${pathname === link.href ? 'bg-accent' : 'bg-white'
-                                }`} />
+                            <span className={`absolute left-0 -bottom-1 w-full h-0.5 bg-accent scale-x-0 transition-transform duration-300 ${
+                                pathname === link.href ? 'scale-x-100' : 'group-hover:scale-x-100'
+                            } origin-left`} />
                         </Link>
                     ))}
                 </div>
@@ -96,6 +55,19 @@ const Navbar = () => {
                         <Search size={20} />
                     </button>
 
+                    {/* Cart Icon */}
+                    <button 
+                        onClick={toggleCart}
+                        className="relative text-white hover:text-accent transition-colors p-1"
+                    >
+                        <ShoppingBag size={20} />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white shadow-sm ring-1 ring-black">
+                                {cartCount}
+                            </span>
+                        )}
+                    </button>
+
                     {/* Auth Section */}
                     {user ? (
                         <Link 
@@ -103,7 +75,7 @@ const Navbar = () => {
                             className="flex items-center space-x-2 text-sm font-medium text-accent hover:text-white transition-colors border border-accent/20 rounded-full px-4 py-1.5 hover:bg-accent/10"
                         >
                             <User size={16} />
-                            <span>Hi, {user.name || 'User'}</span>
+                            <span>Hi, {user.name || user.email?.split('@')[0] || 'User'}</span>
                         </Link>
                     ) : (
                         <Link 

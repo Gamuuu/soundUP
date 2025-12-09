@@ -16,13 +16,22 @@ const monoton = Monoton({
 import Navbar from '../components/layout/Navbar';
 import FooterWrapper from '../components/layout/FooterWrapper';
 
+import { AuthProvider } from '../context/AuthContext';
+import { CartProvider } from '../context/CartContext';
+import CartDrawer from '../components/cart/CartDrawer';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${monoton.variable}`}>
-        <Navbar />
-        {children}
-        <FooterWrapper />
+        <AuthProvider>
+          <CartProvider>
+            <Navbar />
+            <CartDrawer />
+            {children}
+            <FooterWrapper />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import NeonCube from '../../components/ui/NeonCube';
 import { signInWithGoogle } from '../../lib/supabaseAuth';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,8 +36,8 @@ export default function Login() {
       }
 
       // Login Success
-      // Save user to local storage (basic session handling)
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // Use login function from AuthContext
+      login(data.user);
       alert('Welcome back, ' + data.user.name + '!');
       router.push('/'); // Redirect to home
 
