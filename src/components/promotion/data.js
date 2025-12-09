@@ -17,7 +17,7 @@ export const promotionsData = {
         {
             id: 'xmas-2',
             title: 'Jingle Bass Speakers',
-            discount: 'Buy 1 Get 1 50%',
+            discount: '50% OFF',
             description: 'High-fidelity Component Speakers.',
             code: 'JINGLEBASS',
             icon: Music,
