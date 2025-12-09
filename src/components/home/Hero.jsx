@@ -8,6 +8,13 @@ import NeonCube from '../ui/NeonCube';
 const Hero = () => {
     const words = ["Products", "Experience", "Instruments", "Gear"];
     const [index, setIndex] = useState(0);
+    const [bgIndex, setBgIndex] = useState(0);
+
+    const backgrounds = [
+        '/assets/images/home-bg-1.jpg',
+        '/assets/images/home-bg-2.jpg',
+        '/assets/images/home-bg-3.jpg'
+    ];
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -16,9 +23,34 @@ const Hero = () => {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        const bgInterval = setInterval(() => {
+            setBgIndex((prev) => (prev + 1) % backgrounds.length);
+        }, 5000); // Rotate background every 5 seconds
+        return () => clearInterval(bgInterval);
+    }, []);
+
     return (
-        <section id="hero" className="relative min-h-screen flex items-center pt-20 px-6 max-w-7xl mx-auto snap-start">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full">
+        <section id="hero" className="relative h-screen w-full flex items-center pt-20 px-6 snap-start overflow-hidden">
+            {/* Background Slider */}
+            <div className="absolute inset-0 z-0">
+                <AnimatePresence mode="popLayout">
+                    <motion.div
+                        key={bgIndex}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.5 }}
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url('${backgrounds[bgIndex]}')` }}
+                    />
+                </AnimatePresence>
+                {/* Overlay for text readability */}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
+            </div>
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 w-full max-w-7xl mx-auto">
                 {/* Left Content */}
                 <div className="flex flex-col justify-center">
                     <SectionHeading className="text-7xl md:text-8xl leading-[2.5] tracking-tight mb-6">

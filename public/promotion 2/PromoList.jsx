@@ -1,14 +1,8 @@
-'use client';
-
 import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Gift, Calendar, Lock } from 'lucide-react';
+import { Tag, Music, Zap, Layers, Gift, Calendar } from 'lucide-react';
 import { promotionsData } from './data';
-import { useAuth } from '../../context/AuthContext';
 
-const PromoCard = ({ promo, theme, isLoggedIn }) => {
-    const router = useRouter();
-
+const PromoCard = ({ promo, theme }) => {
     const themeStyles = {
         christmas: {
             border: 'border-red-500/30',
@@ -31,16 +25,6 @@ const PromoCard = ({ promo, theme, isLoggedIn }) => {
     const style = themeStyles[theme];
     const Icon = promo.icon;
 
-    const handleCodeClick = () => {
-        if (!isLoggedIn) {
-            router.push('/login');
-        } else {
-            // Copy code to clipboard
-            navigator.clipboard.writeText(promo.code);
-            alert(`Copied: ${promo.code}`);
-        }
-    };
-
     return (
         <div className={`bg-gradient-to-r ${style.gradient} p-8 rounded-2xl border ${style.border} flex flex-col md:flex-row items-center justify-between gap-6 ${style.hoverBorder} transition-colors group`}>
             <div className="flex items-center gap-6">
@@ -48,7 +32,7 @@ const PromoCard = ({ promo, theme, isLoggedIn }) => {
                     <Icon className={style.iconColor} size={32} />
                 </div>
                 <div>
-                    <div className="flex items-center gap-3 mb-1 flex-wrap">
+                    <div className="flex items-center gap-3 mb-1">
                         <h3 className="text-2xl font-bold text-white">{promo.title}</h3>
                         <span className={`${style.discountBg} text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse`}>
                             {promo.discount}
@@ -60,36 +44,17 @@ const PromoCard = ({ promo, theme, isLoggedIn }) => {
 
             <div className="flex flex-col items-end gap-2 w-full md:w-auto">
                 <span className="text-sm text-gray-500 uppercase tracking-widest font-bold">Promo Code</span>
-                <button
-                    onClick={handleCodeClick}
-                    className={`relative px-6 py-3 rounded-xl border border-dashed border-white/30 text-xl font-mono text-white tracking-widest cursor-pointer hover:bg-white/20 transition-all flex items-center gap-3 ${isLoggedIn ? 'bg-white/10' : 'bg-white/5'
-                        }`}
-                >
-                    {isLoggedIn ? (
-                        // Show actual code when logged in
-                        <span className="select-all">{promo.code}</span>
-                    ) : (
-                        // Blur code when not logged in
-                        <>
-                            <span className="blur-sm select-none">{promo.code}</span>
-                            <Lock className="text-gray-400 absolute right-3" size={18} />
-                        </>
-                    )}
-                </button>
-                {!isLoggedIn && (
-                    <span className="text-xs text-gray-500">Login to reveal code</span>
-                )}
+                <div className="bg-white/10 px-6 py-3 rounded-xl border border-dashed border-white/30 text-xl font-monoton text-white tracking-widest select-all cursor-pointer hover:bg-white/20 transition-colors">
+                    {promo.code}
+                </div>
             </div>
         </div>
     );
 };
 
 const PromoList = ({ SectionHeading }) => {
-    const { user, loading } = useAuth();
-    const isLoggedIn = !!user;
-
     return (
-        <section className="min-h-screen pt-24 px-6 bg-background snap-start">
+        <section className="min-h-screen pt-24 px-6 bg-background">
             <div className="max-w-7xl mx-auto pb-20">
                 <div className="mb-12 text-center">
                     {SectionHeading ? (
@@ -100,22 +65,17 @@ const PromoList = ({ SectionHeading }) => {
                     <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
                         Celebrate the holidays with upgraded sound. Limited time offers for Christmas and New Year.
                     </p>
-                    {!isLoggedIn && !loading && (
-                        <p className="text-accent mt-2 text-sm">
-                            🔒 Login to unlock exclusive promo codes
-                        </p>
-                    )}
                 </div>
 
                 {/* Christmas Section */}
                 <div className="mb-16">
                     <div className="flex items-center gap-3 mb-6">
                         <Gift className="text-red-500" size={28} />
-                        <h2 className="text-3xl font-bold text-white">🎄 Christmas Specials</h2>
+                        <h2 className="text-3xl font-bold text-white">Christmas Specials</h2>
                     </div>
                     <div className="flex flex-col gap-6">
                         {promotionsData.christmas.map((promo) => (
-                            <PromoCard key={promo.id} promo={promo} theme="christmas" isLoggedIn={isLoggedIn} />
+                            <PromoCard key={promo.id} promo={promo} theme="christmas" />
                         ))}
                     </div>
                 </div>
@@ -124,11 +84,11 @@ const PromoList = ({ SectionHeading }) => {
                 <div>
                     <div className="flex items-center gap-3 mb-6">
                         <Calendar className="text-yellow-500" size={28} />
-                        <h2 className="text-3xl font-bold text-white">🎆 New Year Celebration</h2>
+                        <h2 className="text-3xl font-bold text-white">New Year Celebration</h2>
                     </div>
                     <div className="flex flex-col gap-6">
                         {promotionsData.newyear.map((promo) => (
-                            <PromoCard key={promo.id} promo={promo} theme="newyear" isLoggedIn={isLoggedIn} />
+                            <PromoCard key={promo.id} promo={promo} theme="newyear" />
                         ))}
                     </div>
                 </div>
