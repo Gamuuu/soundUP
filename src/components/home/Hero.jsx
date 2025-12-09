@@ -53,9 +53,9 @@ const Hero = () => {
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 w-full max-w-7xl mx-auto">
                 {/* Left Content */}
                 <div className="flex flex-col justify-center">
-                    <SectionHeading className="text-7xl md:text-8xl leading-[2.5] tracking-tight mb-6">
+                    <SectionHeading className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[1.2] sm:leading-[1.3] md:leading-[2] lg:leading-[2.5] tracking-tight mb-6">
                         Store. The best way to buy the{' '}
-                        <span className="inline-block relative w-[14ch] align-middle h-[1.3em] overflow-hidden">
+                        <span className="inline-block relative w-[10ch] sm:w-[12ch] md:w-[14ch] align-middle h-[1.3em] overflow-hidden">
                             <AnimatePresence mode="popLayout">
                                 <motion.span
                                     key={words[index]}

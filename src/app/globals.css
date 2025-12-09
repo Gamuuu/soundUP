@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-background text-white font-sans antialiased;
+    @apply bg-background text-white font-sans antialiased overflow-x-hidden max-w-[1920px] mx-auto relative;
   }
 }
 
@@ -25,5 +25,16 @@
 
   .font-monoton {
     font-family: var(--font-monoton);
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
   }
 }
