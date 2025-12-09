@@ -1,8 +1,26 @@
 'use client';
 
 import Image from 'next/image';
+import { ShoppingCart, Check } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
+import { useState } from 'react';
 
 export default function ProductRow({ product }) {
+    const { addToCart } = useCart();
+    const [isAdded, setIsAdded] = useState(false);
+
+    const handleAddToCart = () => {
+        addToCart(product);
+        setIsAdded(true);
+
+        // Reset button state after 1.5 seconds
+        setTimeout(() => {
+            setIsAdded(false);
+        }, 1500);
+    };
+
+    const isOutOfStock = product.stock === 0;
+
     return (
         <div className="group relative overflow-hidden rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-accent/30 transition-all duration-300 hover:scale-[1.01]">
             {/* Subtle glow on hover */}
@@ -43,8 +61,9 @@ export default function ProductRow({ product }) {
                         </p>
                     </div>
 
-                    {/* Price and Stock */}
-                    <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-2 w-full md:w-auto">
+                    {/* Price, Stock, and Add to Cart */}
+                    <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-3 w-full md:w-auto">
+                        {/* Stock Status */}
                         <div className="flex items-center gap-2 flex-1 md:flex-initial">
                             {product.stock > 0 && (
                                 <div className="flex items-center gap-1.5">
@@ -57,6 +76,7 @@ export default function ProductRow({ product }) {
                             )}
                         </div>
 
+                        {/* Price */}
                         <div className="text-right">
                             <div className="text-2xl md:text-3xl font-bold text-accent">
                                 ฿{product.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -65,6 +85,34 @@ export default function ProductRow({ product }) {
                                 Stock: {product.stock}
                             </div>
                         </div>
+
+                        {/* Add to Cart Button */}
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={isOutOfStock}
+                            className={`
+                                flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm
+                                transition-all duration-300 min-w-[140px]
+                                ${isOutOfStock
+                                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                                    : isAdded
+                                        ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]'
+                                        : 'bg-accent hover:bg-accent/80 text-white shadow-[0_0_15px_rgba(255,85,0,0.3)] hover:shadow-[0_0_25px_rgba(255,85,0,0.5)] hover:scale-105'
+                                }
+                            `}
+                        >
+                            {isAdded ? (
+                                <>
+                                    <Check size={18} />
+                                    <span>Added!</span>
+                                </>
+                            ) : (
+                                <>
+                                    <ShoppingCart size={18} />
+                                    <span>Add to Cart</span>
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

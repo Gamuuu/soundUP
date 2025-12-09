@@ -77,7 +77,7 @@ export default function Products() {
                             style={{
                                 WebkitBackgroundClip: 'text',
                                 backgroundClip: 'text',
-                                backgroundImage: "url('/assets/images/about-us.jpg')", // Using available asset
+                                backgroundImage: "url('/assets/images/service_amplifier.png')", // Using available asset
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 WebkitTextStroke: '1px rgba(255, 255, 255, 0.1)'
