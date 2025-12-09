@@ -1,70 +1,60 @@
-PROJECT OVERVIEW: sounduup
+PROJECT OVERVIEW: sounduUP
 
 1. INTRODUCTION
-   This is a web application built with Next.js 16 (App Router). The project appears to be a business or portfolio site featuring various sections such as "About Us", "Products", "Experiences", and "Promotions". It utilizes modern React features (React 19) and is styled with Tailwind CSS.
+   This is a web application built with Next.js (App Router) for an audio equipment business. It features a product catalog, user authentication (Custom & Google OAuth), a shopping cart, and informational pages like "About Us" and "Services".
 
 2. TECHNOLOGIES & TOOLS
-   - Core Framework: Next.js 16.0.7
-   - UI Library: React 19.2.1
-   - Styling: Tailwind CSS 3.4.17 (with PostCSS & Autoprefixer)
-   - Animations: Framer Motion 12.23.24
-   - Icons: Lucide React 0.555.0
-   - Code Quality: ESLint 9.39.1
+   - Core Framework: Next.js 16 (App Router)
+   - Frontend: React 19, Tailwind CSS, Framer Motion
+   - Backend & Database: Supabase (Auth & Data), Custom Next.js API Routes
+   - Icons: Lucide React
+   - State Management: React Context API (AuthContext, CartContext)
 
-3. SETUP INSTRUCTIONS
-   To get this project running locally:
+3. SYSTEM ARCHITECTURE
+   - **Frontend**: Client-side heavy approach using React Components.
+   - **Backend**: Hybrid approach using both direct Supabase Client (for OAuth) and Next.js API Routes (for custom logic/auth).
+   - **Data Flow**: Client Components -> API Routes -> Supabase Database.
 
-   A. Prerequisites
-      - Node.js (Latest LTS recommended)
-      - npm (Node Package Manager)
+4. PAGE FUNCTIONALITY & LOGIC
 
-   B. Installation
-      Open your terminal in the project root and run:
-      $ npm install
+   A. Home (src/app/page.js)
+      - Acts as a landing page composing various UI components (Hero, Categories, Promotion, Popular, Gallery).
+      - Purely presentational client component.
 
-   C. Running Development Server
-      Start the local dev server:
-      $ npm run dev
-      
-      Access the app at: http://localhost:3000
+   B. Products System (src/app/products/)
+      - **Main Page (/products)**:
+        - Fetches all products via `/api/products`.
+        - Groups products into 4 categories: Speaker, Subwoofer, Amplifier, Head Unit.
+      - **Category Page (/products/[category])**:
+        - Dynamic routing based on category slug.
+        - Fetches all products and filters by the current category.
+        - Features a client-side "Brand Filter" to toggle product visibility by brand.
 
-   D. Building for Production
-      To create an optimized production build:
-      $ npm run build
+   C. Authentication (Hybrid System)
+      - **Register (/register)**: Custom form submitting to `/api/auth/register`.
+        *Note: Currently stores passwords in plain text (Security Improvement Needed).*
+      - **Login (/login)**: Supports two methods:
+        1. Email/Password: Verifies against custom API.
+        2. Google OAuth: Uses `supabaseAuth.signInWithGoogle()`.
+      - **Profile (/profile)**: Protected route. Checks AuthContext/LocalStorage for session.
 
-      To preview the production build:
-      $ npm start
+   D. Shopping Cart
+      - Managed via `CartContext`.
+      - Persists data to browser `localStorage`.
+      - Supports Add, Remove, and Quantity updates.
 
-4. PROJECT STRUCTURE
-   The project follows the Next.js App Router structure within the 'src' directory.
+   E. Other Pages
+      - **Service**: Displays installation portfolios via `ServiceGallery`.
+      - **Promotion**: Lists active deals via `PromoList`.
+      - **Contact**: Contact form and info.
 
-   / (Root)
-   ├── next.config.mjs       # Next.js configuration
-   ├── tailwind.config.js    # Tailwind CSS configuration
-   ├── package.json          # Dependencies and scripts
-   ├── public/               # Static assets (images, icons)
-   └── src/
-       ├── app/              # App Router: Pages and layouts
-       │   ├── layout.js     # Root layout (likely contains Navbar/Footer)
-       │   ├── page.js       # Homepage
-       │   ├── globals.css   # Global styles (Tailwind imports)
-       │   ├── about-us/     # Route: /about-us
-       │   ├── contact/      # Route: /contact
-       │   ├── experiences/  # Route: /experiences
-       │   ├── products/     # Route: /products
-       │   └── promotion/    # Route: /promotion
-       ├── assets/           # Project specific assets
-       └── components/       # Reusable React components
-           ├── ui/           # Generic UI elements (ScrollNavigation, SectionHeading)
-           ├── Navbar.jsx    # Navigation bar
-           ├── Hero.jsx      # Hero section component
-           ├── Gallery.jsx   # Image gallery component
-           ├── Popular.jsx   # 'Popular' section component
-           ├── Promotion.jsx # Promotion section component
-           └── Categories.jsx
+5. KEY DIRECTORIES & FILES
+   - `src/app/api/`: Backend logic and endpoints.
+   - `src/context/`: Global state providers (Auth, Cart).
+   - `src/lib/`: Utility libraries (Supabase client, helper functions).
+   - `src/components/`: Reusable UI components organized by feature.
 
-5. CURRENT SCRIPT COMMANDS
-   - dev: "next dev"
-   - build: "next build"
-   - start: "next start"
-   - lint: "next lint"
+6. SETUP INSTRUCTIONS
+   - Install: `npm install`
+   - Dev Server: `npm run dev` (http://localhost:3000)
+   - Build: `npm run build`
