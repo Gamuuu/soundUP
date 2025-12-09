@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabaseAuth } from '../lib/supabaseAuth';
+import { promotionsData } from '../components/promotion/data';
 
 const CartContext = createContext();
 
@@ -10,6 +11,12 @@ export function CartProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Discount Logic
+  const [discount, setDiscount] = useState(0);
+  const [appliedCode, setAppliedCode] = useState('');
+  const [discountError, setDiscountError] = useState('');
+  const [discountSuccess, setDiscountSuccess] = useState('');
 
   // Get current user session
   useEffect(() => {
@@ -257,9 +264,69 @@ export function CartProvider({ children }) {
   }, [user]);
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const cartTotal = Math.max(0, subtotal - discount);
 
   const toggleCart = () => setIsCartOpen((prev) => !prev);
+
+  const applyCoupon = async (code) => {
+    setDiscountError('');
+    setDiscountSuccess('');
+
+    if (!code) {
+      setDiscountError('Please enter a code');
+      return;
+    }
+
+    const normalizedCode = code.toUpperCase();
+
+    // Flatten promotions data
+    const allPromos = [
+      ...promotionsData.christmas,
+      ...promotionsData.newyear,
+      // Add other categories if needed
+    ];
+
+    const promo = allPromos.find(p => p.code === normalizedCode);
+
+    if (!promo) {
+      setDiscountError('Invalid discount code');
+      setDiscount(0);
+      setAppliedCode('');
+      return;
+    }
+
+    let discountAmount = 0;
+    // Parse discount string
+    if (promo.discount.includes('%')) {
+      const percentage = parseFloat(promo.discount);
+      if (!isNaN(percentage)) {
+        discountAmount = subtotal * (percentage / 100);
+      }
+    } else if (promo.discount.includes('$') || promo.discount.includes('THB')) {
+      const value = parseFloat(promo.discount.replace(/[^\d.]/g, ''));
+      if (!isNaN(value)) {
+        discountAmount = value;
+      }
+    } else {
+      setDiscountError('This code cannot be applied.');
+      return;
+    }
+
+    // Cap discount at subtotal
+    discountAmount = Math.min(discountAmount, subtotal);
+
+    setDiscount(discountAmount);
+    setAppliedCode(normalizedCode);
+    setDiscountSuccess(`Coupon applied: ${promo.discount}`);
+  };
+
+  const removeCoupon = () => {
+    setDiscount(0);
+    setAppliedCode('');
+    setDiscountSuccess('');
+    setDiscountError('');
+  };
 
   return (
     <CartContext.Provider
@@ -275,6 +342,12 @@ export function CartProvider({ children }) {
         setIsCartOpen,
         toggleCart,
         isLoading,
+        discount,
+        appliedCode,
+        discountError,
+        discountSuccess,
+        applyCoupon,
+        removeCoupon,
       }}
     >
       {children}
